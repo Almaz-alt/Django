@@ -1,26 +1,50 @@
 from django.db import models
 
+class Clothing(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=50)
+    image = models.ImageField(upload_to='clothes/')
+
+    def __str__(self):
+        return self.name
+
+# Другие модели, например BookModel и Review
 class BookModel(models.Model):
-    GENRE_CHOICES = (
-        ('PSYCHOLOGY', 'PSYCHOLOGY'),
-        ('NOVEL', 'NOVEL'),
-        ('LITERARY', 'LITERARY'),
-        ('FANTASY', 'FANTASY'),
+    GENRE_CHOICE = (
+        ('fantasy', 'Fantasy'),
+        ('horror', 'Horror'),
+        ('romance', 'Romance'),
+        ('thriller', 'Thriller'),
+        ('sci-fi', 'Sci-Fi'),
+        ('non-fiction', 'Non-fiction'),
     )
-    image = models.ImageField(upload_to='books/', verbose_name='загрузите фото')
-    title = models.CharField(max_length=150, verbose_name='укажите название книги')
-    description = models.TextField(verbose_name='укажите описание книг', blank=True)
-    price = models.PositiveIntegerField(verbose_name='укажите цену книг', default=300)
-    created_at = models.DateField(auto_now_add=True)
-    genre = models.CharField(max_length=25, choices=GENRE_CHOICES, default='NOVEL',)
-    verbose_name= 'выберите жанр'
-    email = models.TextField(verbose_name='укажите почту')
-    author = models.CharField(max_length=200, verbose_name="укажите автора", default='<Анарбеков алмаз>')
-    trailer = models.URLField(verbose_name='оставьте ссылку из YOUTUBE')
+    image = models.ImageField(upload_to='books/')
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+    genre = models.CharField(max_length=20, choices=GENRE_CHOICE)
+    email = models.EmailField()
+    author = models.CharField(max_length=100)
+    trailer = models.URLField()
 
-def __str__(self):
-    return self.title
+    def __str__(self):
+        return self.title
 
-class Meta:
-    verbose_name = 'книгу'
-    verbose_name_plural = 'книги'
+    class Meta:
+        verbose_name = 'Книга'
+        verbose_name_plural = 'Книги'
+
+class Review(models.Model):
+    name = models.CharField(max_length=100)
+    content = models.TextField()
+    rating = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    book = models.ForeignKey(BookModel, on_delete=models.CASCADE, related_name='reviews')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
