@@ -1,12 +1,5 @@
 from django import forms
-from .models import CartItem, Order
+from .models import ParsedData
 
-class CartItemForm(forms.ModelForm):
-    class Meta:
-        model = CartItem
-        fields = ['book', 'quantity']
-
-class OrderForm(forms.ModelForm):
-    class Meta:
-        model = Order
-        fields = ['status']
+class ParserForm(forms.Form):
+    media_type = forms.ChoiceField(choices=ParsedData.MEDIA_TYPE_CHOICES, label='Media Type')
