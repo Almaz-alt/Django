@@ -1,10 +1,23 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина</title>
 </head>
 <body>
-
+    <h1>Корзина</h1>
+    <ul>
+        {% for item in cart.items.all %}
+        <li>{{ item.book.title }} - {{ item.quantity }} шт. ({{ item.get_total_price }} руб.)
+            <form method="post" action="{% url 'remove_from_cart' item.id %}">
+                {% csrf_token %}
+                <button type="submit">Удалить</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    <p>Общая стоимость: {{ cart.get_total_price }} руб.</p>
 </body>
 </html>

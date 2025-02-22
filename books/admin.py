@@ -1,15 +1,44 @@
 from django.contrib import admin
-from . import models
+from .models import BookModel, Review, Cart, CartItem, Order, OrderItem, Clothing
 
-# Register your models here.
-@admin.register(models.BookModel)  # Исправлено: models.BookModel
-class BookModelAdmin(admin.ModelAdmin):  # Исправлено: BookModelAdmin
+@admin.register(BookModel)
+class BookModelAdmin(admin.ModelAdmin):
     list_display = ['title', 'author', 'genre', 'price', 'created_at']
     list_filter = ['genre', 'created_at']
     search_fields = ['title', 'author', 'genre']
 
-@admin.register(models.Review)  # Исправлено: models.Review
-class ReviewAdmin(admin.ModelAdmin):  # Исправлено: ReviewAdmin
-    list_display = ['book', 'rating', 'created_at']  # Исправлено: 'rating' вместо 'stars'
-    list_filter = ['rating', 'created_at']  # Исправлено: 'rating' вместо 'start'
-    search_fields = ['book__title']  # Изменено: по 'book__title' для поиска по названию книги
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ['book', 'name', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['book__title', 'name']
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['user__username']
+
+@admin.register(CartItem)
+class CartItemAdmin(admin.ModelAdmin):
+    list_display = ['cart', 'book', 'quantity']
+    list_filter = ['cart']
+    search_fields = ['book__title']
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'status', 'created_at']
+    list_filter = ['status', 'created_at']
+    search_fields = ['user__username', 'status']
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ['order', 'book', 'quantity']
+    list_filter = ['order']
+    search_fields = ['book__title']
+
+@admin.register(Clothing)
+class ClothingAdmin(admin.ModelAdmin):
+    list_display = ['name', 'category', 'description']
+    list_filter = ['category']
+    search_fields = ['name', 'category']

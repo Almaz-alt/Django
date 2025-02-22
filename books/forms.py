@@ -1,7 +1,17 @@
 from django import forms
-from . import models
+from .models import Review, Order, CartItem
 
 class ReviewForm(forms.ModelForm):
     class Meta:
-        model = models.Review
-        fields = ('book', 'start', 'text')
+        model = Review
+        fields = ['name', 'text']
+
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['status']
+
+class CartItemForm(forms.ModelForm):
+    class Meta:
+        model = CartItem
+        fields = ['book', 'quantity']

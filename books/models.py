@@ -1,14 +1,5 @@
 from django.db import models
 
-class Clothing(models.Model):
-    name = models.CharField(max_length=100)
-    category = models.CharField(max_length=50)
-    image = models.ImageField(upload_to='clothes/')
-
-    def __str__(self):
-        return self.name
-
-# Другие модели, например BookModel и Review
 class BookModel(models.Model):
     GENRE_CHOICE = (
         ('fantasy', 'Fantasy'),
@@ -36,11 +27,10 @@ class BookModel(models.Model):
         verbose_name_plural = 'Книги'
 
 class Review(models.Model):
+    book = models.ForeignKey('BookModel', on_delete=models.CASCADE, related_name='reviews')
     name = models.CharField(max_length=100)
-    content = models.TextField()
-    rating = models.IntegerField()
+    text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    book = models.ForeignKey(BookModel, on_delete=models.CASCADE, related_name='reviews')
 
     def __str__(self):
         return self.name
@@ -48,3 +38,61 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+
+class Clothing(models.Model):
+    CATEGORY_CHOICES = (
+        ('kids', 'Детская'),
+        ('teens', 'Подростковая'),
+        ('adults', 'Взрослая'),
+    )
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    image = models.ImageField(upload_to='clothes/')
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+class Cart(models.Model):
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='carts')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Cart {self.id} - {self.user.username}"
+
+    def get_total_price(self):
+        return sum(item.get_total_price() for item in self.items.all())
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
+    book = models.ForeignKey('BookModel', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.book.title} (x{self.quantity})"
+
+    def get_total_price(self):
+        return self.quantity * self.book.price
+
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+        ('shipped', 'Shipped'),
+        ('canceled', 'Canceled'),
+    ]
+
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order {self.id} - {self.user.username} ({self.status})"
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
+    book = models.ForeignKey('BookModel', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.book.title} (x{self.quantity})"

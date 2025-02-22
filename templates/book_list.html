@@ -1,0 +1,9 @@
+<form method="GET" action="{% url 'book_list' %}">
+    <input type="text" name="q" placeholder="Search books..." value="{{ request.GET.q }}">
+    <button type="submit">Search</button>
+</form>
+
+{% for book in books %}
+    <p>{{ book.title }}</p>
+{% endfor %}
+

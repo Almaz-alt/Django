@@ -1,17 +1,11 @@
 from django.contrib import admin
-from .models import BookModel, Review, Cart, CartItem, Order, OrderItem
+from .models import BookModel, Cart, CartItem, Order, OrderItem
 
 @admin.register(BookModel)
 class BookModelAdmin(admin.ModelAdmin):
     list_display = ['title', 'author', 'genre', 'price', 'created_at']
     list_filter = ['genre', 'created_at']
     search_fields = ['title', 'author', 'genre']
-
-@admin.register(Review)
-class ReviewAdmin(admin.ModelAdmin):
-    list_display = ['book', 'rating', 'created_at']
-    list_filter = ['rating', 'created_at']
-    search_fields = ['book__title']
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
