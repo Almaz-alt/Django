@@ -27,15 +27,3 @@ class ParserView(CreateView):
                 media_type=media_type
             )
         return super().form_valid(form)
-def form_valid(self, form):
-    media_type = form.cleaned_data['media_type']
-    from .parser import parsing_rezka
-    parsed_data = parsing_rezka()
-    for item in parsed_data:
-        ParsedData.objects.create(
-            title=item['title'],
-            link='https://rezka.ag/',
-            summary='',
-            media_type=media_type
-        )
-    return super().form_valid(form)
