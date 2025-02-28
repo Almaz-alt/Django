@@ -2,11 +2,25 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class CustomUser(AbstractUser):
-    phone_number = models.CharField(max_length=15, blank=True, null=True)
-    address = models.CharField(max_length=255, blank=True, null=True)
+    phone = models.CharField(max_length=15, unique=True)
+    address = models.TextField()
+    date_of_birth = models.DateField()
+    experience = models.IntegerField(default=0)  # Experience in years
+    position = models.CharField(max_length=50)
+    education = models.CharField(max_length=100)
+    company = models.CharField(max_length=100)
+    salary = models.FloatField(default=0.0)
+    linkedin = models.URLField(blank=True, null=True)
+    year = models.PositiveIntegerField(default=1)
+    salary = models.FloatField(default=0.0)
 
-class Profile(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    date_of_birth = models.DateField(null=True, blank=True)
-    experience_years = models.PositiveIntegerField(default=0)
-    desired_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    def save(self, *args, **kwargs):
+        if 1 <= self.year < 3:
+            self.salary = 100
+        elif 3 <= self.year < 8:
+            self.salary = 200
+        elif 8 <= self.year < 15:
+            self.salary = 300
+        else:
+            self.salary = 400
+        super().save(*args, **kwargs)

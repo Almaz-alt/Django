@@ -1,14 +1,16 @@
 from django.utils.deprecation import MiddlewareMixin
 
-class ExperienceSalaryMiddleware(MiddlewareMixin):
-    def process_request(self, request):
-        if request.user.is_authenticated:
-            user = request.user
-            experience = user.profile.experience_years
-            if experience < 2:
-                user.profile.salary = 50000
-            elif 2 <= experience < 5:
-                user.profile.salary = 70000
+class SalaryMiddleware(MiddlewareMixin):
+    def procces_request(self, request):
+        if request.path == '/register/' and request.method == 'POST':
+            year = int(request.POST.get('year'))
+            if year < 1:
+                return HttpResponseBadRequest('Не может быть меньше 1')
+            elif year > 1 and year < 3:
+                request.salary = 100
+            elif year > 3 and year < 8:
+                request.salary = 200
+            elif year > 8 and year <= 15:
+                request.salary = 300
             else:
-                user.profile.salary = 100000
-            user.profile.save()
+                request.salary = 400

@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class BookModel(models.Model):
     GENRE_CHOICE = (
@@ -54,7 +55,6 @@ class Clothing(models.Model):
         return self.name
 
 class Cart(models.Model):
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='carts')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -64,8 +64,8 @@ class Cart(models.Model):
         return sum(item.get_total_price() for item in self.items.all())
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
-    book = models.ForeignKey('BookModel', on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, related_name='cart_items', on_delete=models.CASCADE)
+    book = models.ForeignKey('BookModel', on_delete=models.CASCADE, related_name='cart_books')
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
@@ -82,7 +82,6 @@ class Order(models.Model):
         ('canceled', 'Canceled'),
     ]
 
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -90,8 +89,8 @@ class Order(models.Model):
         return f"Order {self.id} - {self.user.username} ({self.status})"
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
-    book = models.ForeignKey('BookModel', on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, related_name="order_items", on_delete=models.CASCADE)
+    book = models.ForeignKey('BookModel', on_delete=models.CASCADE, related_name='order_books')
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
